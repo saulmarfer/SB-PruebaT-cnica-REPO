@@ -1,0 +1,18 @@
+## .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Logs generados en tiempo de ejecución
+src/SB.PruebaTecnica.API/Logs/
+
+
+## Secretos locales
+appsettings.Local.json
+*.env
+
+## Sistema operativo
+.DS_Store
+Thumbs.db
