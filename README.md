@@ -1,4 +1,4 @@
-# Prueba Técnica para la Superintendencia de Bancos de la República Dominicana
+# Superintendencia de Bancos - Prueba Técnica
 
 Solución completa (backend + frontend) para la prueba técnica de la Superintendencia
 de Bancos de la República Dominicana.
