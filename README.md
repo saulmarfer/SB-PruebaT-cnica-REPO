@@ -3,82 +3,6 @@
 Solución completa (backend + frontend) para la prueba técnica de la Superintendencia
 de Bancos de la República Dominicana.
 
-API RESTful en .NET 8 con Onion Architecture, interfaz en React + TypeScript siguiendo `Maqueta.jpg`, y las respuestas de conceptualización listas para el correo.
-
-```
-SB-PruebaTecnica/
-├── src/                              → Backend (.NET 8 / C#) — ver detalle más abajo
-├── tests/                            → Pruebas unitarias del backend (xUnit)
-├── scripts/schema.sql                → Script SQL alternativo
-├── frontend/                         → App React + TypeScript (Vite) — ver frontend/README.md
-├── docs/
-│   ├── Respuestas-Conceptualizacion.md  → Las 8 respuestas de la Sección 4, listas para el correo
-│   └── recursos-originales/             → Excel y logo originales, archivados como referencia
-└── README.md                         → Este archivo (backend)
-```
-
-## Para realizar un inicio rápido (backend + frontend juntos)
-
-```bash
-# Terminal 1 — Backend
-dotnet restore
-cd src/SB.PruebaTecnica.API
-dotnet ef migrations add InitialCreate --project ../SB.PruebaTecnica.Infrastructure --startup-project .
-dotnet run
-
-# Terminal 2 — Frontend
-cd frontend
-npm install
-cp .env.example .env
-npm run dev
-```
-
-Backend en `https://localhost:7099/swagger`, frontend en `http://localhost:5173`.
-Usuario de prueba: `admin` / `Admin123!`.
-
----
-
-# Backend
-
-API RESTful desarrollada en **.NET 8 / C#** siguiendo **Onion Architecture**, para la
-Superintendencia de Bancos de la República Dominicana. Cubre los dos módulos exigidos:
-
-1. **Gestión de pagos de empleados** (Prueba_tecnica-1.pdf): 4 tipos de empleado,
-   cálculo de pago semanal, filtros, reportes, roles admin/usuario con JWT.
-2. **Mantenimiento de entidades gubernamentales** (API - Especificaciones Técnicas.pdf):
-   CRUD persistido en **archivo de texto plano** dentro del propio proyecto.
-
-## Arquitectura
-
-```
-SB.PruebaTecnica.sln
-├── src/
-│   ├── SB.PruebaTecnica.Domain          → Entidades y contratos de repositorio (sin dependencias externas)
-│   ├── SB.PruebaTecnica.Application     → Casos de uso, DTOs, patrón Strategy (cálculo de pago), validaciones
-│   ├── SB.PruebaTecnica.Infrastructure  → EF Core (SQL Server), repositorio de archivo de texto, JWT, logging
-│   └── SB.PruebaTecnica.API             → Controllers, Program.cs, Swagger, middleware de excepciones
-├── tests/
-│   └── SB.PruebaTecnica.Tests           → Pruebas unitarias (xUnit)
-└── scripts/
-    └── schema.sql                       → Script SQL alternativo (por si no usas migraciones EF)
-```
-
-La regla de dependencias de Onion se respeta en todo momento: `Domain` no depende de nada;
-`Application` solo depende de `Domain`; *Infrastructure* implementa las interfaces definidas
-en `Domain`/`Application`; `API` orquesta todo mediante inyección de dependencias.
-
-## Patrones de diseño usados
-
-- **Strategy + Factory**: cada tipo de empleado (`Asalariado`, `PorHoras`, `PorComision`,
-  `AsalariadoPorComision`) tiene su propia clase de cálculo (`ICalculadoraPagoStrategy`).
-  `CalculadoraPagoFactory` selecciona la estrategia correcta en tiempo de ejecución.
-  Agregar un nuevo tipo de empleado solo requiere una nueva clase + registro en DI,
-  sin tocar código existente (Open/Closed Principle).
-- **Repository Pattern**: `IEmpleadoRepository`, `IUsuarioRepository` (Entity Framework Core) e
-  `IEntidadGubernamentalRepository` (archivo de texto) — la capa de Aplicación no sabe
-  ni le importa cómo se persisten los datos.
-- **TPH (Table-Per-Hierarchy)** en Entity Framework Core para los 4 subtipos de `Empleado`.
-
 ## Prerrequisitos
 
 - [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
@@ -113,6 +37,85 @@ con Swagger en `/swagger`.
 | `admin` | `Admin123!` |
 
 Úsalo en `POST /api/auth/login` para obtener el token JWT y poder llamar a los endpoints protegidos.
+
+## Para realizar un inicio rápido (backend + frontend juntos)
+
+```bash
+# Terminal 1 — Backend
+dotnet restore
+cd src/SB.PruebaTecnica.API
+dotnet ef migrations add InitialCreate --project ../SB.PruebaTecnica.Infrastructure --startup-project .
+dotnet run
+
+# Terminal 2 — Frontend
+cd frontend
+npm install
+cp .env.example .env
+npm run dev
+```
+
+Backend en `https://localhost:7099/swagger`, frontend en `http://localhost:5173`.
+Usuario de prueba: `admin` / `Admin123!`.
+
+---
+
+
+API RESTful en .NET 8 con Onion Architecture, interfaz en React + TypeScript siguiendo `Maqueta.jpg`, y las respuestas de conceptualización listas para el correo.
+
+```
+SB-PruebaTecnica/
+├── src/                              → Backend (.NET 8 / C#) — ver detalle más abajo
+├── tests/                            → Pruebas unitarias del backend (xUnit)
+├── scripts/schema.sql                → Script SQL alternativo
+├── frontend/                         → App React + TypeScript (Vite) — ver frontend/README.md
+├── docs/
+│   ├── Respuestas-Conceptualizacion.md  → Las 8 respuestas de la Sección 4, listas para el correo
+│   └── recursos-originales/             → Excel y logo originales, archivados como referencia
+└── README.md                         → Este archivo (backend)
+```
+
+# Backend
+
+API RESTful desarrollada en **.NET 8 / C#** siguiendo **Onion Architecture**, para la
+Superintendencia de Bancos de la República Dominicana. Cubre los dos módulos exigidos:
+
+1. **Gestión de pagos de empleados** (Prueba_tecnica-1.pdf): 4 tipos de empleado,
+   cálculo de pago semanal, filtros, reportes, roles admin/usuario con JWT.
+2. **Mantenimiento de entidades gubernamentales** (API - Especificaciones Técnicas.pdf):
+   CRUD persistido en **archivo de texto plano** dentro del propio proyecto.
+
+## Arquitectura
+
+```
+SB.PruebaTecnica.sln
+├── src/
+│   ├── SB.PruebaTecnica.Domain          → Entidades (sin dependencias externas)
+│   ├── SB.PruebaTecnica.Application     → Casos de uso, DTOs, patrón Strategy (cálculo de pago), validaciones
+│   ├── SB.PruebaTecnica.Infrastructure  → Entity Framework Core (SQL Server), repositorio de archivo de texto, JWT, logging
+│   └── SB.PruebaTecnica.API             → Controllers, Program.cs, Swagger, middleware de excepciones
+├── tests/
+│   └── SB.PruebaTecnica.Tests           → Pruebas unitarias (xUnit)
+└── scripts/
+    └── schema.sql                       → Script SQL alternativo
+```
+
+La regla de dependencias de Onion se respeta en todo momento: 
+1. `Domain` no depende de nada.
+2. `Application` solo depende de `Domain`.
+3. *Infrastructure* implementa las interfaces definidas en `Domain`/`Application`.
+4. `API` orquesta todo mediante inyección de dependencias.
+
+## Patrones de diseño usados
+
+- **Strategy + Factory**: cada tipo de empleado (`Asalariado`, `PorHoras`, `PorComision`,
+  `AsalariadoPorComision`) tiene su propia clase de cálculo (`ICalculadoraPagoStrategy`).
+  `CalculadoraPagoFactory` selecciona la estrategia correcta en tiempo de ejecución.
+  Agregar un nuevo tipo de empleado solo requiere una nueva clase + registro en DI,
+  sin tocar código existente (Open/Closed Principle).
+- **Repository Pattern**: `IEmpleadoRepository`, `IUsuarioRepository` (Entity Framework Core) e
+  `IEntidadGubernamentalRepository` (archivo de texto) — la capa de Aplicación no sabe
+  ni le importa cómo se persisten los datos.
+- **TPH (Table-Per-Hierarchy)** en Entity Framework Core para los 4 subtipos de `Empleado`.
 
 ## Entidades gubernamentales / reguladas — datos reales
 
@@ -174,8 +177,6 @@ dotnet test
 
 Incluye pruebas de las 4 fórmulas de cálculo de pago (incluyendo el caso de horas
 extra) y de las validaciones del servicio de entidades gubernamentales.
-
-## Logging
 
 Serilog escribe a consola y a `src/SB.PruebaTecnica.API/Logs/log-YYYYMMDD.txt`. 
 El middleware `ExceptionMiddleware` registratoda excepción no controlada antes 
