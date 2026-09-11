@@ -10,33 +10,6 @@ de Bancos de la República Dominicana.
 - (Opcional) [dotnet-ef tool](https://learn.microsoft.com/ef/core/cli/dotnet):
   `dotnet tool install --global dotnet-ef`
 
-## Cómo ejecutar
-
-```bash
-# 1. Restaurar dependencias
-dotnet restore
-
-# 2. Ajustar la cadena de conexión si es necesario
-#    src/SB.PruebaTecnica.API/appsettings.json → ConnectionStrings:SqlServerConnection
-
-# 3. Crear la migración inicial (solo la primera vez)
-cd src/SB.PruebaTecnica.API
-dotnet ef migrations add InitialCreate --project ../SB.PruebaTecnica.Infrastructure --startup-project .
-
-# 4. Ejecutar la API 
-dotnet run
-```
-
-La API queda disponible en `http://localhost:5099` (o el puerto que asigne tu entorno),
-con Swagger en `/swagger`.
-
-### Usuario administrador de prueba (sembrado automáticamente)
-
-| Usuario | Contraseña  |
-|---------|-------------|
-| `admin` | `Admin123!` |
-
-Úsalo en `POST /api/auth/login` para obtener el token JWT y poder llamar a los endpoints protegidos.
 
 ## Para realizar un inicio rápido (backend + frontend juntos)
 
@@ -54,8 +27,16 @@ cp .env.example .env
 npm run dev
 ```
 
-Backend en `https://localhost:7099/swagger`, frontend en `http://localhost:5173`.
-Usuario de prueba: `admin` / `Admin123!`.
+La API queda disponible en `http://localhost:5099` (o el puerto que asigne tu entorno),
+con Swagger en `/swagger`. 
+
+Frontend en `http://localhost:5173`.
+
+### Usuario administrador de prueba (sembrado automáticamente)
+
+| Usuario | Contraseña  |
+|---------|-------------|
+| `admin` | `Admin123!` |
 
 ---
 
